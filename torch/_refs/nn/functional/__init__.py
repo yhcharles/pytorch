@@ -348,10 +348,10 @@ def threshold(
     if inplace:
         raise NotImplementedError
 
-    # the straightforward computation drops nan's from input in some cases
-    partial = torch.where(a > threshold, a, value)
-    # so we explicitly restore them
-    return torch.where(torch.isnan(a), a, partial)
+    if torch.is_complex(a):
+        raise RuntimeError("Complex 'a' not supported")
+
+    return torch.where(a <= threshold, value, a)
 
 
 @register_decomposition(torch.ops.aten.hardtanh)
